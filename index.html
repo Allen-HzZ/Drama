@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>广告位配置后台原型</title>
+  <style>
+    :root {
+      --bg: #f7f8fa;
+      --card: #ffffff;
+      --border: #d9dee7;
+      --text: #1f2329;
+      --subtext: #646a73;
+      --blue: #1890ff;
+      --green: #16c35b;
+      --red: #ff4d4f;
+      --muted: #eef1f5;
+      --shadow: 0 8px 24px rgba(31, 35, 41, 0.06);
+      --radius: 14px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 28px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .page {
+      max-width: 1360px;
+      margin: 0 auto;
+    }
+
+    .title-row {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .title {
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+
+    .title-note {
+      font-size: 16px;
+      color: var(--red);
+      line-height: 1.5;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 28px 32px 34px;
+    }
+
+    .top-grid {
+      display: grid;
+      grid-template-columns: 1.3fr 1.35fr 1fr;
+      gap: 36px;
+      align-items: start;
+    }
+
+    .section-label {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 14px;
+    }
+
+    .control-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .row-inline {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .sub-label {
+      width: 70px;
+      color: var(--subtext);
+      font-size: 16px;
+      flex: 0 0 auto;
+    }
+
+    .select, .number-input {
+      height: 52px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+      padding: 0 16px;
+      font-size: 16px;
+      color: var(--text);
+      outline: none;
+      min-width: 0;
+    }
+
+    .select {
+      width: 100%;
+    }
+
+    .number-input {
+      width: 160px;
+    }
+
+    .platform-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .platform-select {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .add-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 2px solid var(--green);
+      color: var(--green);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+      font-size: 20px;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .switch-wrap {
+      padding-top: 46px;
+    }
+
+    .switch-line {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 52px;
+    }
+
+    .switch-text {
+      font-size: 16px;
+      color: var(--text);
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 28px 0 22px;
+    }
+
+    .compare-panel {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 20px;
+    }
+
+    .compare-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 18px;
+      font-weight: 600;
+      padding-top: 8px;
+    }
+
+    .info-btn {
+      position: relative;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid #5b8ee6;
+      color: #5b8ee6;
+      background: #fff;
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+
+    .tooltip {
+      position: absolute;
+      left: 36px;
+      top: -2px;
+      width: 420px;
+      background: #fff;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      border-radius: 10px;
+      padding: 14px 16px;
+      color: var(--subtext);
+      font-size: 14px;
+      line-height: 1.6;
+      display: none;
+      z-index: 10;
+    }
+
+    .info-btn:hover .tooltip,
+    .info-btn:focus .tooltip,
+    .info-btn.active .tooltip {
+      display: block;
+    }
+
+    .compare-body {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      max-width: 980px;
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      min-height: 40px;
+    }
+
+    .toggle-row .label {
+      min-width: 92px;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .tip-box {
+      border: 1px dashed var(--border);
+      background: #fafbfd;
+      color: var(--subtext);
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 15px;
+      line-height: 1.6;
+      max-width: 860px;
+    }
+
+    .config-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .config-item {
+      display: grid;
+      grid-template-columns: 280px 180px 1fr;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .config-item .name {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .config-item .desc {
+      color: var(--subtext);
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .footer-preview {
+      margin-top: 24px;
+      border-top: 1px dashed var(--border);
+      padding-top: 20px;
+      color: var(--subtext);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 10px;
+      border-radius: 999px;
+      background: #eef6ff;
+      color: #2878d9;
+      font-size: 13px;
+      margin-right: 6px;
+      margin-bottom: 6px;
+    }
+
+    .switch {
+      position: relative;
+      width: 58px;
+      height: 32px;
+      display: inline-block;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      inset: 0;
+      background: #c9d2dd;
+      border-radius: 999px;
+      transition: .2s ease;
+      cursor: pointer;
+    }
+
+    .slider::before {
+      content: "";
+      position: absolute;
+      width: 26px;
+      height: 26px;
+      left: 3px;
+      top: 3px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,.15);
+      transition: .2s ease;
+    }
+
+    .switch input:checked + .slider {
+      background: var(--blue);
+    }
+
+    .switch input:checked + .slider::before {
+      transform: translateX(26px);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    @media (max-width: 1100px) {
+      .top-grid, .compare-panel, .config-item {
+        grid-template-columns: 1fr;
+      }
+      .switch-wrap {
+        padding-top: 0;
+      }
+      .compare-title {
+        padding-top: 0;
+      }
+      .tooltip {
+        width: 320px;
+        left: 0;
+        top: 36px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="title-row">
+      <div class="title">广告位支持广告类型和聚合平台</div>
+      <div class="title-note">（勾选类型前需确认客户端是否支持）</div>
+    </div>
+
+    <div class="card">
+      <div class="top-grid">
+        <div>
+          <div class="section-label">广告类型</div>
+          <div class="control-stack">
+            <select class="select" id="mainAdType">
+              <option selected>激励</option>
+              <option>插屏</option>
+              <option>Banner</option>
+              <option>原生</option>
+            </select>
+            <div class="row-inline">
+              <div class="sub-label">补位配置</div>
+              <select class="select">
+                <option selected>插屏</option>
+                <option>激励</option>
+                <option>Banner</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="section-label">聚合平台</div>
+          <div class="control-stack">
+            <div class="platform-wrap">
+              <select class="select platform-select">
+                <option selected>max</option>
+                <option>admob</option>
+                <option>topon</option>
+                <option>tradplus</option>
+              </select>
+              <button class="add-btn" type="button" aria-label="添加">+</button>
+            </div>
+            <div class="platform-wrap">
+              <select class="select platform-select">
+                <option selected>max</option>
+                <option>admob</option>
+                <option>topon</option>
+                <option>tradplus</option>
+              </select>
+              <button class="add-btn" type="button" aria-label="添加">+</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="switch-wrap">
+          <div class="section-label">是否补位</div>
+          <div class="switch-line">
+            <span class="switch-text">开启</span>
+            <label class="switch">
+              <input type="checkbox" id="fillToggle" checked />
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="compare-panel" id="comparePanel" hidden>
+        <div class="compare-title">
+          <span>比价设置</span>
+          <button class="info-btn" type="button" id="tooltipBtn" aria-label="说明">
+            !
+            <span class="tooltip">比价设置仅针对补位广告生效：支持被补位广告和补位广告之间进行比价</span>
+          </button>
+        </div>
+
+        <div class="compare-body">
+          <div class="toggle-row">
+            <div class="label">是否比价</div>
+            <label class="switch">
+              <input type="checkbox" id="compareToggle" checked />
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div id="compareConfig">
+            <div class="config-list">
+              <div class="config-item">
+                <div class="name">比价次数</div>
+                <input class="number-input" id="compareCount" type="number" min="1" step="1" value="3" />
+                <div class="desc">单次session内该场景可触发的比价上限（仅补位且比价胜出的展示计入次数；达到上限后不再参与比价，未ready时仍按补位逻辑执行）</div>
+              </div>
+
+              <div class="config-item">
+                <div class="name">第几次广告展示开始比价</div>
+                <input class="number-input" id="compareStart" type="number" min="0" step="1" value="2" />
+                <div class="desc">该场景第N次广告展示开始比价（0为首次即开始比价）</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tip-box hidden" id="compareOffTip">
+            当前未开启比价，仅按补位逻辑处理。
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-preview">
+        <div style="margin-bottom:10px; font-weight:600; color:#1f2329;">当前配置预览</div>
+        <div id="summary"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const compareToggle = document.getElementById('compareToggle');
+    const compareConfig = document.getElementById('compareConfig');
+    const compareOffTip = document.getElementById('compareOffTip');
+    const fillToggle = document.getElementById('fillToggle');
+    const comparePanel = document.getElementById('comparePanel');
+    const compareCount = document.getElementById('compareCount');
+    const compareStart = document.getElementById('compareStart');
+    const mainAdType = document.getElementById('mainAdType');
+    const summary = document.getElementById('summary');
+    const tooltipBtn = document.getElementById('tooltipBtn');
+
+    function sanitizeNumber(input, minValue) {
+      const value = parseInt(input.value, 10);
+      if (Number.isNaN(value) || value < minValue) {
+        input.value = minValue;
+      } else {
+        input.value = value;
+      }
+    }
+
+    function renderCompareArea() {
+      const fillEnabled = fillToggle.checked;
+      const compareEnabled = compareToggle.checked;
+
+      comparePanel.hidden = !fillEnabled;
+      compareConfig.classList.toggle('hidden', !compareEnabled);
+      compareOffTip.classList.toggle('hidden', compareEnabled);
+      renderSummary();
+    }
+
+    function renderSummary() {
+      const adType = mainAdType.value;
+      const fill = fillToggle.checked ? '开启' : '关闭';
+      const compare = compareToggle.checked ? '开启' : '关闭';
+      const count = compareCount.value;
+      const start = compareStart.value;
+
+      let html = '';
+      html += `<span class="pill">主广告类型：${adType}</span>`;
+      html += `<span class="pill">补位：${fill}</span>`;
+      html += `<span class="pill">比价：${compare}</span>`;
+
+      if (!fillToggle.checked) {
+        html += '<div style="margin-top:8px;">当前关闭补位，因此不展示比价设置模块。</div>';
+      } else if (compareToggle.checked) {
+        html += `<div style="margin-top:8px;">比价参数：单次session内最多比价 <b>${count}</b> 次；从第 <b>${start}</b> 次广告展示开始比价。</div>`;
+      } else {
+        html += '<div style="margin-top:8px;">当前未开启比价，仅按补位逻辑处理。</div>';
+      }
+
+      summary.innerHTML = html;
+    }
+
+    compareToggle.addEventListener('change', renderCompareArea);
+    fillToggle.addEventListener('change', renderCompareArea);
+    mainAdType.addEventListener('change', renderSummary);
+
+    compareCount.addEventListener('input', () => {
+      sanitizeNumber(compareCount, 1);
+      renderSummary();
+    });
+
+    compareStart.addEventListener('input', () => {
+      sanitizeNumber(compareStart, 0);
+      renderSummary();
+    });
+
+    tooltipBtn.addEventListener('click', () => {
+      tooltipBtn.classList.toggle('active');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!tooltipBtn.contains(e.target)) {
+        tooltipBtn.classList.remove('active');
+      }
+    });
+
+    renderCompareArea();
+  </script>
+</body>
+</html>
